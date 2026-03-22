@@ -1,1 +1,0 @@
-frontend/src/hooks/useProperties.js

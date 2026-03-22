@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
-import { getProperties, PropertyFilters } from '../services/api';
+// src/hooks/useProperties.js
 
-export const useProperties = (filters) => {
+import { useState, useEffect } from 'react';
+import { getProperties } from '../services/api';
+
+export const useProperties = (filters = {}) => {
   const [properties, setProperties] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(filters.page || 1);
@@ -12,8 +14,12 @@ export const useProperties = (filters) => {
     setLoading(true);
     getProperties({ ...filters, page, pageSize })
       .then((data) => {
-        setProperties(data.properties);
-        setTotal(data.total);
+        setProperties(data?.properties || []);
+        setTotal(data?.total || 0);
+      })
+      .catch(() => {
+        setProperties([]);
+        setTotal(0);
       })
       .finally(() => setLoading(false));
   }, [filters, page, pageSize]);

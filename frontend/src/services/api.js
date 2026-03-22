@@ -1,3 +1,5 @@
+// src/services/api.js
+
 export const getProperties = async (filters) => {
   const query = new URLSearchParams(filters).toString();
   const response = await fetch(`/api/properties?${query}`);
