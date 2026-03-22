@@ -1,0 +1,17 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend for Real Estate Auction Aggregator",
+  "main": "main.py",
+  "scripts": {
+    "start": "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+  },
+  "dependencies": {
+    "fastapi": "^0.95.0",
+    "uvicorn": "^0.22.0",
+    "httpx": "^0.24.1",
+    "motor": "^3.1.1",
+    "pydantic": "^1.10.9",
+    "starlette": "^0.27.0"
+  }
+}
