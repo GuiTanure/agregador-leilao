@@ -81,54 +81,51 @@ SYSTEM DESCRIPTION
 
 2. Main API endpoints
 
-- GET /properties: Retrieve a paginated list of properties with filtering and sorting options.
-- GET /properties/{id}: Retrieve detailed information about a specific property.
+- GET /properties: List properties with support for filters, pagination, and sorting.
+- GET /properties/{id}: Get detailed information about a specific property.
 - POST /scraper/caixa: Trigger scraping of Caixa Econômica Federal auction properties.
-- GET /scraper/status: Check the status of ongoing or last scraping tasks.
+- GET /scraper/status: Check status of scraping tasks.
 
 3. Property data model fields
 
 - id: Unique identifier
 - title: Property title or description
-- address: Full address of the property
-- city: City where the property is located
+- address: Full address string
+- city: City name
 - state: State abbreviation
 - auction_date: Date and time of the auction
-- starting_bid: Initial bid amount
+- starting_bid: Starting bid price
 - current_bid: Current highest bid (if available)
 - auction_status: Computed field indicating if auction is active or finished
-- bank: Bank holding the auction (e.g., Caixa)
-- property_type: Type of property (house, apartment, land, etc.)
+- bank: Bank name (e.g., Caixa Econômica Federal)
+- property_type: Type of property (e.g., apartment, house, land)
 - images: List of image URLs
-- details: Additional property details and features
+- details_url: URL to the official auction listing
 
 4. How auction status (active/finished) should be calculated
 
-- The auction_status is determined by comparing the current date/time with the auction_date.
-- If the current date/time is before the auction_date, status is "active".
-- If the current date/time is after the auction_date, status is "finished".
+- Auction status is determined by comparing the current date/time with the auction_date.
+- If current date/time is before auction_date, status is "active".
+- If current date/time is after auction_date, status is "finished".
 
 5. How filters should work
 
-- Filters allow users to narrow down properties by:
-  - Location (city, state)
-  - Property type
-  - Auction status (active/finished)
-  - Price range (starting_bid)
-  - Auction date range
-- Filters are applied via query parameters on the GET /properties endpoint.
+- Filters can be applied on city, state, bank, property_type, auction_status, price range, and auction_date range.
+- Filters are passed as query parameters to the GET /properties endpoint.
+- Backend applies filters in database queries for efficient retrieval.
 
 6. How pagination and sorting should work
 
-- Pagination is implemented via query parameters: page number and page size.
-- Sorting can be applied on fields like auction_date, starting_bid, and city.
-- Default sorting is by auction_date ascending (soonest auctions first).
+- Pagination is supported via query parameters: page (default 1) and page_size (default 20).
+- Sorting can be applied on fields like auction_date, starting_bid, current_bid.
+- Sorting direction can be ascending or descending.
+- Backend returns paginated results with metadata (total count, pages).
 
 7. How new scrapers (Banco do Brasil, Santander, etc.) can be added later
 
 - Add new scraper modules under backend/scraper/ (e.g., banco_do_brasil_scraper.py).
-- Implement scraper logic specific to the bank's auction website.
-- Add corresponding routes in backend/routes/scraper.py to trigger new scrapers.
-- Extend services/property_service.py to handle data from new scrapers.
-- Update models/property.py if needed to accommodate new data fields.
-- This modular approach allows easy integration of additional banks without affecting existing code.
+- Implement scraping logic specific to the bank's auction site.
+- Add corresponding routes under backend/routes/scraper.py to trigger new scrapers.
+- Extend services to handle data processing for new banks.
+- Update property model if needed to accommodate new data fields.
+- Frontend can filter and display properties from new banks seamlessly.
