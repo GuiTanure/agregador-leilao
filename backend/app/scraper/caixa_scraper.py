@@ -106,7 +106,7 @@ async def load_property_details(session: httpx.AsyncClient, property_id: str) ->
         return None
 
     # Extract basic info
-    property_id_extracted = property_id
+    property_id_value = property_id
     title = get_text_or_none('h1.property-title')
     state = get_text_or_none('span.state')
     city = get_text_or_none('span.city')
@@ -121,11 +121,8 @@ async def load_property_details(session: httpx.AsyncClient, property_id: str) ->
     discount_percentage = get_float_or_none('span.discount-percentage')
     occupied_text = get_text_or_none('span.occupied')
     occupied = occupied_text.lower() == 'sim' if occupied_text else False
-    auction_date = get_text_or_none('span.auction-date')
-    evaluation_price = get_float_or_none('span.evaluation-price')
-    discount_percentage = get_float_or_none('span.discount-percentage')
-    auction_type = get_text_or_none('span.auction-type')
-    auction_status = 'active' if auction_type and 'ativo' in auction_type.lower() else 'finished'
+    auction_date_str = get_text_or_none('span.auction-date')
+    auction_date = auction_date_str if auction_date_str else ''
     # Additional details
     condo_fee = get_float_or_none('span.condo-fee')
     condo_fee_condition = get_text_or_none('span.condo-fee-condition')
@@ -135,3 +132,12 @@ async def load_property_details(session: httpx.AsyncClient, property_id: str) ->
     img_tag = soup.find('img', class_='property-image')
     if img_tag:
         image_url = img_tag.get('src', '')
+    detail_url = url
+
+    # Determine auction status
+    auction_status = 'active'
+    if auction_date:
+        try:
+            auction_dt = datetime.strptime(auction_date, '%Y-%m-%d')
+            today = datetime.now()
+            if
