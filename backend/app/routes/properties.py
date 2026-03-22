@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Query, Path, HTTPException
 from typing import List, Optional
 from starlette.responses import JSONResponse
+import datetime
 from app.models.property import Property
 from app.services.property_service import PropertyService
 from app.db import properties_collection
@@ -46,19 +47,17 @@ async def get_properties(
 
 @router.get("/filter")
 async def get_filters():
-    # For simplicity, returning static options; in real case, fetch from database or config
     options = {
         "states": ["SP", "RJ", "MG", "RS"],
         "cities": ["São Paulo", "Rio de Janeiro", "Belo Horizonte", "Porto Alegre"],
         "neighborhoods": ["Centro", "Jardim", "Copacabana", "Pinheiros"],
-        "propertyTypes": ["Apartamento", "Casa", "Terreno"],
-        "auctionTypes": ["Leilão", "Venda Direta"]
+        "propertyTypes": ["Apartamento", "Casa", "Terreno", "Comercial"]
     }
     return options
 
-@router.get("/{property_id}")
-async def get_property(property_id: str = Path(...)):
-    property_obj = await property_service.find_property_by_id(property_id)
+@router.get("/{id}")
+async def get_property(id: str = Path(...)):
+    property_obj = await property_service.find_property_by_id(id)
     if not property_obj:
         raise HTTPException(status_code=404, detail="Property not found")
     return property_obj.dict(by_alias=True)

@@ -44,7 +44,8 @@ class PropertyService:
         Return statistics: total, active, finished.
         """
         total = await self.collection.count_documents({})
-        active = await self.collection.count_documents({"auction_date": {"$gte": "2023-01-01"}})
+        today_str = datetime.now().strftime('%Y-%m-%d')
+        active = await self.collection.count_documents({"auction_date": {"$gte": today_str}})
         finished = total - active
         return {
             "total": total,
