@@ -98,19 +98,19 @@ SYSTEM DESCRIPTION
 - current_bid: Current highest bid (if available)
 - auction_status: Computed field indicating if auction is active or finished
 - bank: Bank name (e.g., Caixa Econômica Federal)
-- property_type: Type of property (e.g., apartment, house, land)
+- property_type: Type of property (e.g., apartment, house, commercial)
 - images: List of image URLs
-- details_url: URL to the official auction listing
+- details: Additional property details (e.g., area, bedrooms, bathrooms)
 
 4. How auction status (active/finished) should be calculated
 
-- Auction status is determined by comparing the current date/time with the auction_date.
+- The auction_status is derived by comparing the current date/time with the auction_date.
 - If current date/time is before auction_date, status is "active".
 - If current date/time is after auction_date, status is "finished".
 
 5. How filters should work
 
-- Filters can be applied on city, state, bank, property_type, auction_status, price range, and auction_date range.
+- Filters can be applied on city, state, property_type, auction_status, price range, and auction_date range.
 - Filters are passed as query parameters to the GET /properties endpoint.
 - Backend applies filters in database queries for efficient retrieval.
 
@@ -124,8 +124,8 @@ SYSTEM DESCRIPTION
 7. How new scrapers (Banco do Brasil, Santander, etc.) can be added later
 
 - Add new scraper modules under backend/scraper/ (e.g., banco_do_brasil_scraper.py).
-- Implement scraping logic specific to the bank's auction site.
+- Implement scraping logic specific to the bank's auction website.
 - Add corresponding routes under backend/routes/scraper.py to trigger new scrapers.
 - Extend services to handle data processing for new banks.
 - Update property model if needed to accommodate new data fields.
-- Frontend can filter and display properties from new banks seamlessly.
+- This modular approach allows easy integration of additional banks without impacting existing code.
