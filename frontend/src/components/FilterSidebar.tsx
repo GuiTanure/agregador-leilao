@@ -66,7 +66,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ onFilter, onScrape }) => 
               className="w-1/2 border rounded px-2 py-1"
               value={filters.priceMin ?? ''}
               onChange={e => updateFilter('priceMin', e.target.value ? Number(e.target.value) : undefined)}
-              min={0}
             />
             <input
               type="number"
@@ -74,7 +73,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ onFilter, onScrape }) => 
               className="w-1/2 border rounded px-2 py-1"
               value={filters.priceMax ?? ''}
               onChange={e => updateFilter('priceMax', e.target.value ? Number(e.target.value) : undefined)}
-              min={0}
             />
           </div>
         </div>
@@ -88,8 +86,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ onFilter, onScrape }) => 
               className="w-1/2 border rounded px-2 py-1"
               value={filters.discountMin ?? ''}
               onChange={e => updateFilter('discountMin', e.target.value ? Number(e.target.value) : undefined)}
-              min={0}
-              max={100}
             />
             <input
               type="number"
@@ -97,8 +93,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ onFilter, onScrape }) => 
               className="w-1/2 border rounded px-2 py-1"
               value={filters.discountMax ?? ''}
               onChange={e => updateFilter('discountMax', e.target.value ? Number(e.target.value) : undefined)}
-              min={0}
-              max={100}
             />
           </div>
         </div>
@@ -138,4 +132,8 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ onFilter, onScrape }) => 
             checked={filters.acceptsFGTS || false}
             onChange={e => updateFilter('acceptsFGTS', e.target.checked ? true : undefined)}
           />
-          <label htmlFor="fgts" className="text-sm
+          <label htmlFor="fgts" className="text-sm">Aceita FGTS</label>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <input
