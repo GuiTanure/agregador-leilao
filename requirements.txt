@@ -1,2 +1,8 @@
+beautifulsoup4
 fastapi
+httpx
+motor
+pydantic
+pymongo
+starlette
 uvicorn
