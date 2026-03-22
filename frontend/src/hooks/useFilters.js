@@ -1,17 +1,27 @@
-frontend/
-└── src/
-    ├── components/
-    │   ├── FilterSidebar.js
-    │   ├── PropertyCard.js
-    │   ├── PropertyGrid.js
-    │   └── Pagination.js
-    ├── hooks/
-    │   ├── useFilters.js
-    │   └── useProperties.js
-    ├── pages/
-    │   ├── Dashboard.js
-    │   └── PropertyDetails.js
-    ├── services/
-    │   └── api.js
-    └── styles/
-        └── global.css
+import { useState, useEffect } from 'react';
+import { getFilterOptions } from '../services/api';
+
+export const useFilters = () => {
+  const [filters, setFilters] = useState({});
+  const [options, setOptions] = useState({
+    states: [],
+    cities: [],
+    neighborhoods: [],
+    propertyTypes: [],
+    auctionTypes: [],
+  });
+
+  useEffect(() => {
+    getFilterOptions().then(setOptions);
+  }, []);
+
+  const updateFilter = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const resetFilters = () => {
+    setFilters({});
+  };
+
+  return { filters, updateFilter, resetFilters, options };
+};
