@@ -81,49 +81,54 @@ SYSTEM DESCRIPTION
 
 2. Main API endpoints
 
-- GET /properties: List properties with filtering, sorting, and pagination.
-- GET /properties/{id}: Get detailed information about a specific property.
+- GET /properties: Retrieve a paginated list of properties with filtering and sorting options.
+- GET /properties/{id}: Retrieve detailed information about a specific property.
 - POST /scraper/caixa: Trigger scraping of Caixa Econômica Federal auction properties.
-- GET /scraper/status: Check status of scraping tasks.
+- GET /scraper/status: Check the status of ongoing or last scraping tasks.
 
 3. Property data model fields
 
 - id: Unique identifier
 - title: Property title or description
-- address: Full address string
-- city: City name
+- address: Full address of the property
+- city: City where the property is located
 - state: State abbreviation
 - auction_date: Date and time of the auction
-- starting_price: Initial auction price
-- current_bid: Current highest bid (if applicable)
-- status: Auction status (active, finished)
-- bank: Bank name (e.g., Caixa)
+- starting_bid: Initial bid amount
+- current_bid: Current highest bid (if available)
+- auction_status: Computed field indicating if auction is active or finished
+- bank: Bank holding the auction (e.g., Caixa)
 - property_type: Type of property (house, apartment, land, etc.)
 - images: List of image URLs
-- details: Additional property details (area, bedrooms, bathrooms, etc.)
+- details: Additional property details and features
 
 4. How auction status (active/finished) should be calculated
 
-- The status is determined by comparing the current date/time with the auction_date.
-- If the auction_date is in the future, status is "active".
-- If the auction_date is past, status is "finished".
+- The auction_status is determined by comparing the current date/time with the auction_date.
+- If the current date/time is before the auction_date, status is "active".
+- If the current date/time is after the auction_date, status is "finished".
 
 5. How filters should work
 
-- Filters include city, state, price range, auction status, property type, and bank.
-- Filters are applied on the backend via query parameters.
-- The backend returns filtered and paginated results.
+- Filters allow users to narrow down properties by:
+  - Location (city, state)
+  - Property type
+  - Auction status (active/finished)
+  - Price range (starting_bid)
+  - Auction date range
+- Filters are applied via query parameters on the GET /properties endpoint.
 
 6. How pagination and sorting should work
 
-- Pagination uses page number and page size parameters.
-- Sorting can be done by auction_date, starting_price, or current_bid.
-- Sorting order can be ascending or descending.
+- Pagination is implemented via query parameters: page number and page size.
+- Sorting can be applied on fields like auction_date, starting_bid, and city.
+- Default sorting is by auction_date ascending (soonest auctions first).
 
 7. How new scrapers (Banco do Brasil, Santander, etc.) can be added later
 
 - Add new scraper modules under backend/scraper/ (e.g., banco_do_brasil_scraper.py).
-- Add corresponding routes under backend/routes/scraper.py to trigger new scrapers.
-- Extend services to handle data from new scrapers.
-- Update models if needed to accommodate new data fields.
-- Frontend can filter by bank to show properties from different banks.
+- Implement scraper logic specific to the bank's auction website.
+- Add corresponding routes in backend/routes/scraper.py to trigger new scrapers.
+- Extend services/property_service.py to handle data from new scrapers.
+- Update models/property.py if needed to accommodate new data fields.
+- This modular approach allows easy integration of additional banks without affecting existing code.
