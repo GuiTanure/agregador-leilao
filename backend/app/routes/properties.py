@@ -45,7 +45,7 @@ async def get_properties(
         "pageSize": page_size
     }
 
-@router.get("/filter")
+@router.get("/filters")
 async def get_filters():
     options = {
         "states": ["SP", "RJ", "MG", "RS"],
@@ -55,9 +55,9 @@ async def get_filters():
     }
     return options
 
-@router.get("/{id}")
-async def get_property(id: str = Path(...)):
-    property_obj = await property_service.find_property_by_id(id)
+@router.get("/{property_id}")
+async def get_property(property_id: str = Path(..., description="ID do imóvel")):
+    property_obj = await property_service.find_property_by_id(property_id)
     if not property_obj:
         raise HTTPException(status_code=404, detail="Property not found")
     return property_obj.dict(by_alias=True)

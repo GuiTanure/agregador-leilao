@@ -2,6 +2,7 @@ from typing import List, Dict, Any, Optional
 from motor.motor_asyncio import AsyncIOMotorCollection
 from app.models.property import Property
 from bson import ObjectId
+from datetime import datetime
 
 class PropertyService:
     def __init__(self, collection: AsyncIOMotorCollection):

@@ -54,85 +54,84 @@ async def load_property_list(session: httpx.AsyncClient, property_ids: List[str]
             parts = href.split('/')
             if len(parts) >= 3:
                 property_id = parts[-1]
-            # Extract title
-            title_tag = card.find('h3')
-            if title_tag:
-                title = title_tag.get_text(strip=True)
-            # Extract sale price
-            price_tag = card.find('span', class_='sale-price')
-            if price_tag:
-                price_text = price_tag.get_text(strip=True).replace('R$', '').replace('.', '').replace(',', '.')
-                try:
-                    sale_price = float(price_text)
-                except:
-                    sale_price = 0.0
-            properties.append({
-                'property_id': property_id,
-                'title': title,
-                'sale_price': sale_price
-            })
+        # Extract title
+        title_tag = card.find('h3')
+        if title_tag:
+            title = title_tag.get_text(strip=True)
+        # Extract sale price
+        price_tag = card.find('span', class_='sale-price')
+        if price_tag:
+            price_text = price_tag.get_text(strip=True).replace('R$', '').replace('.', '').replace(',', '.')
+            try:
+                sale_price = float(price_text)
+            except:
+                sale_price = 0.0
+        properties.append({
+            'property_id': property_id,
+            'title': title,
+            'sale_price': sale_price
+        })
     return properties
 
-async def fetch_property_details(session: httpx.AsyncClient, property_id: str) -> Dict[str, Any]:
+async def load_property_details(session: httpx.AsyncClient, property_id: str) -> Dict[str, Any]:
     """
-    Fetch detailed property info from the detail page.
+    Fetch detailed property page and extract all relevant details.
     """
-    detail_url = DETAIL_URL_TEMPLATE.format(property_id=property_id)
-    response = await session.get(detail_url)
+    url = DETAIL_URL_TEMPLATE.format(property_id=property_id)
+    response = await session.get(url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'lxml')
 
-    def get_text(selector):
+    def get_text_or_none(selector):
         tag = soup.select_one(selector)
-        return tag.get_text(strip=True) if tag else ''
+        return tag.get_text(strip=True) if tag else None
 
-    def get_float(selector):
-        text = get_text(selector).replace('R$', '').replace('.', '').replace(',', '.')
-        try:
-            return float(text)
-        except:
-            return None
+    def get_float_or_none(selector):
+        text = get_text_or_none(selector)
+        if text:
+            text = text.replace('R$', '').replace('.', '').replace(',', '.')
+            try:
+                return float(text)
+            except:
+                return None
+        return None
 
-    def get_int(selector):
-        text = get_text(selector)
-        try:
-            return int(text)
-        except:
-            return None
+    def get_int_or_none(selector):
+        val = get_text_or_none(selector)
+        if val:
+            try:
+                return int(val)
+            except:
+                return None
+        return None
 
     # Extract basic info
-    property_data = {
-        'property_id': property_id,
-        'title': get_text('h1.property-title'),
-        'state': get_text('span.state'),
-        'city': get_text('span.city'),
-        'neighborhood': get_text('span.neighborhood'),
-        'address': get_text('span.address'),
-        'property_type': get_text('span.property-type'),
-        'area': get_float('span.area'),
-        'bedrooms': get_int('span.bedrooms'),
-        'parking_spaces': get_int('span.parking-spaces'),
-        'sale_price': get_float('span.sale-price'),
-        'evaluation_price': get_float('span.evaluation-price'),
-        'discount_percentage': get_float('span.discount-percentage'),
-        'occupied': 'Occupied' in get_text('span.status'),
-        'accepts_financing': 'Financing' in get_text('span.tags'),
-        'accepts_fgts': 'FGTS' in get_text('span.tags'),
-        'in_dispute': 'In Dispute' in get_text('span.status'),
-        'auction_type': get_text('span.auction-type'),
-        'auction_date': get_text('span.auction-date'),
-        'auction_status': 'active' if get_text('span.auction-date') >= datetime.now().strftime('%Y-%m-%d') else 'finished',
-        'condo_fee': get_float('span.condo-fee'),
-        'condo_fee_condition': get_text('span.condo-fee-condition'),
-        'iptu': get_float('span.iptu'),
-        'iptu_condition': get_text('span.iptu-condition'),
-        'image_url': get_text('img.property-image')['src'] if soup.find('img', class_='property-image') else '',
-        'detail_url': detail_url
-    }
-    return property_data
-
-async def run():
-    """
-    Main function to run the scraper.
-    """
-    async
+    property_id_extracted = property_id
+    title = get_text_or_none('h1.property-title')
+    state = get_text_or_none('span.state')
+    city = get_text_or_none('span.city')
+    neighborhood = get_text_or_none('span.neighborhood')
+    address = get_text_or_none('span.address')
+    property_type = get_text_or_none('span.property-type')
+    area = get_float_or_none('span.area')
+    bedrooms = get_int_or_none('span.bedrooms')
+    parking_spaces = get_int_or_none('span.parking-spaces')
+    sale_price = get_float_or_none('span.sale-price')
+    evaluation_price = get_float_or_none('span.evaluation-price')
+    discount_percentage = get_float_or_none('span.discount-percentage')
+    occupied_text = get_text_or_none('span.occupied')
+    occupied = occupied_text.lower() == 'sim' if occupied_text else False
+    auction_date = get_text_or_none('span.auction-date')
+    evaluation_price = get_float_or_none('span.evaluation-price')
+    discount_percentage = get_float_or_none('span.discount-percentage')
+    auction_type = get_text_or_none('span.auction-type')
+    auction_status = 'active' if auction_type and 'ativo' in auction_type.lower() else 'finished'
+    # Additional details
+    condo_fee = get_float_or_none('span.condo-fee')
+    condo_fee_condition = get_text_or_none('span.condo-fee-condition')
+    iptu = get_float_or_none('span.iptu')
+    iptu_condition = get_text_or_none('span.iptu-condition')
+    image_url = ''
+    img_tag = soup.find('img', class_='property-image')
+    if img_tag:
+        image_url = img_tag.get('src', '')
