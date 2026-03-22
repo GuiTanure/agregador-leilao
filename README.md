@@ -77,12 +77,12 @@ SYSTEM DESCRIPTION
 - Scraper modules (e.g., caixa_scraper.py) extract auction property data from bank websites.
 - Scraped data is processed and stored in the database via services and models.
 - The backend exposes API endpoints to query property data.
-- The frontend consumes these APIs to display auction properties to users.
+- The frontend consumes these APIs to display property listings and details.
 
 2. Main API endpoints
 
 - GET /properties: List properties with support for filters, pagination, and sorting.
-- GET /properties/{id}: Retrieve detailed information about a specific property.
+- GET /properties/{id}: Get detailed information about a specific property.
 - POST /scraper/caixa: Trigger scraping of Caixa Econômica Federal auction properties.
 - GET /scraper/status: Check status of scraping tasks.
 
@@ -98,20 +98,22 @@ SYSTEM DESCRIPTION
 - current_bid: Current highest bid (if applicable)
 - status: Auction status (active, finished)
 - bank: Bank name (e.g., Caixa)
-- url: Link to the auction listing
+- property_type: Type of property (house, apartment, land, etc.)
+- area: Property area in square meters
+- bedrooms: Number of bedrooms
+- bathrooms: Number of bathrooms
 - images: List of image URLs
-- created_at: Timestamp of record creation
-- updated_at: Timestamp of last update
+- url: Link to the auction listing on the bank website
 
 4. How auction status (active/finished) should be calculated
 
 - The status is determined by comparing the current date/time with the auction_date.
-- If the current date/time is before the auction_date, status is "active".
-- If the auction_date has passed, status is "finished".
+- If current date/time is before auction_date, status is "active".
+- If current date/time is after auction_date, status is "finished".
 
 5. How filters should work
 
-- Filters can be applied on city, state, price range, auction status, bank, and auction date range.
+- Filters can be applied on city, state, price range, property type, auction status, and date range.
 - Filters are passed as query parameters to the GET /properties endpoint.
 - The backend applies filters in the database query to return matching properties.
 
@@ -120,13 +122,13 @@ SYSTEM DESCRIPTION
 - Pagination is supported via query parameters: page (default 1) and page_size (default 20).
 - Sorting can be applied on fields like auction_date, starting_price, and current_bid.
 - Sorting direction can be ascending or descending.
-- The backend returns paginated and sorted results accordingly.
+- The backend returns paginated results with metadata (total count, pages).
 
 7. How new scrapers (Banco do Brasil, Santander, etc.) can be added later
 
 - Add new scraper modules inside backend/scraper/ (e.g., banco_do_brasil_scraper.py).
 - Implement scraping logic specific to the bank's auction website.
-- Add corresponding routes in backend/routes/scraper.py to trigger new scrapers.
-- Extend services to handle data processing for new banks.
-- Update the property model if needed to accommodate new data fields.
+- Add corresponding routes in backend/routes/scraper.py to trigger these scrapers.
+- Extend services/property_service.py to handle data from new scrapers.
+- Update models/property.py if needed to accommodate new data fields.
 - This modular approach allows easy integration of additional banks without affecting existing code.
