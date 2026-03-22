@@ -77,7 +77,7 @@ SYSTEM DESCRIPTION
 - Scraper modules (e.g., caixa_scraper.py) extract auction property data from bank websites.
 - Scraped data is processed and stored in the database via services and models.
 - The backend exposes API endpoints to query property data.
-- The frontend consumes these APIs to display property listings and details.
+- The frontend consumes these APIs to display auction properties to users.
 
 2. Main API endpoints
 
@@ -95,27 +95,24 @@ SYSTEM DESCRIPTION
 - state: State abbreviation
 - auction_date: Date and time of the auction
 - starting_price: Initial auction price
-- current_bid: Current highest bid (if applicable)
+- current_bid: Current highest bid (if available)
 - status: Auction status (active, finished)
 - bank: Bank name (e.g., Caixa)
 - property_type: Type of property (house, apartment, land, etc.)
-- area: Property area in square meters
-- bedrooms: Number of bedrooms
-- bathrooms: Number of bathrooms
 - images: List of image URLs
-- url: Link to the auction listing on the bank website
+- details: Additional property details (area, bedrooms, bathrooms, etc.)
 
 4. How auction status (active/finished) should be calculated
 
 - The status is determined by comparing the current date/time with the auction_date.
-- If current date/time is before auction_date, status is "active".
-- If current date/time is after auction_date, status is "finished".
+- If the auction_date is in the future, status is "active".
+- If the auction_date is past, status is "finished".
 
 5. How filters should work
 
-- Filters can be applied on city, state, price range, property type, auction status, and date range.
+- Filters can be applied on city, state, price range, auction status, property type, and auction date range.
 - Filters are passed as query parameters to the GET /properties endpoint.
-- The backend applies filters in the database query to return matching properties.
+- The backend applies filters in the database query for efficient retrieval.
 
 6. How pagination and sorting should work
 
@@ -126,9 +123,8 @@ SYSTEM DESCRIPTION
 
 7. How new scrapers (Banco do Brasil, Santander, etc.) can be added later
 
-- Add new scraper modules inside backend/scraper/ (e.g., banco_do_brasil_scraper.py).
-- Implement scraping logic specific to the bank's auction website.
-- Add corresponding routes in backend/routes/scraper.py to trigger these scrapers.
+- Add new scraper modules under backend/scraper/ (e.g., banco_do_brasil_scraper.py).
+- Create corresponding routes in backend/routes/scraper.py to trigger these scrapers.
 - Extend services/property_service.py to handle data from new scrapers.
 - Update models/property.py if needed to accommodate new data fields.
-- This modular approach allows easy integration of additional banks without affecting existing code.
+- This modular approach allows easy integration of additional banks without impacting existing code.
