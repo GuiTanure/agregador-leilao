@@ -17,14 +17,6 @@ export interface Property {
   bedrooms: number;
   parkingSpaces: number;
   occupied: boolean;
-  acceptsFGTS: boolean;
-  acceptsFinancing: boolean;
-  inDispute: boolean;
-  auctionStatus: 'active' | 'finished';
-  condoFee: number;
-  iptu: number;
-  auctionType: 'Leilão SFI' | 'Venda Online' | 'Licitação Aberta';
-  neighborhood: string;
 }
 
 export interface PropertiesResponse {
@@ -40,7 +32,6 @@ export interface FilterOptions {
   neighborhoods: string[];
   propertyTypes: string[];
   auctionTypes: string[];
-  auctionStatuses: string[];
 }
 
 export interface PropertyFilters {
@@ -61,10 +52,12 @@ export interface PropertyFilters {
   areaMax?: number;
   auctionDateStart?: string;
   auctionDateEnd?: string;
-  condoFeeMin?: number;
   condoFeeMax?: number;
-  iptuMin?: number;
   iptuMax?: number;
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
 export interface Stats {
@@ -77,17 +70,8 @@ const api = axios.create({
   baseURL: '/api',
 });
 
-export const getProperties = async (
-  filters: PropertyFilters,
-  page: number,
-  pageSize: number
-): Promise<PropertiesResponse> => {
-  const params: any = {
-    page,
-    pageSize,
-    ...filters,
-  };
-  const response = await api.get('/properties', { params });
+export const getProperties = async (filters: PropertyFilters): Promise<PropertiesResponse> => {
+  const response = await api.get('/properties', { params: filters });
   return response.data;
 };
 

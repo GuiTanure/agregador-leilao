@@ -10,7 +10,6 @@ export const useFilters = () => {
     neighborhoods: [],
     propertyTypes: [],
     auctionTypes: [],
-    auctionStatuses: [],
   });
 
   useEffect(() => {
