@@ -90,28 +90,27 @@ SYSTEM DESCRIPTION
 
 - id: Unique identifier
 - title: Property title or description
-- address: Full address string
-- city: City name
+- address: Full address of the property
+- city: City where the property is located
 - state: State abbreviation
 - auction_date: Date and time of the auction
 - starting_price: Initial auction price
-- current_bid: Current highest bid (if available)
-- status: Auction status (active, finished)
-- bank: Bank name (e.g., Caixa Econômica Federal)
-- url: Link to the auction listing
+- current_bid: Current highest bid (if applicable)
+- auction_status: Computed status (active or finished)
+- bank: Bank holding the auction (e.g., Caixa)
+- property_type: Type of property (house, apartment, land, etc.)
 - images: List of image URLs
-- created_at: Timestamp when record was created
-- updated_at: Timestamp when record was last updated
+- details: Additional property details (area, bedrooms, bathrooms, etc.)
 
 4. How auction status (active/finished) should be calculated
 
-- The status is determined by comparing the current date/time with the auction_date.
-- If current date/time is before auction_date, status is "active".
-- If current date/time is after auction_date, status is "finished".
+- The auction_status is derived by comparing the current date/time with the auction_date.
+- If the current date/time is before the auction_date, status is "active".
+- If the auction_date has passed, status is "finished".
 
 5. How filters should work
 
-- Filters can be applied on city, state, price range, auction status, bank, and auction date range.
+- Filters can be applied on city, state, property_type, price range, auction_status, and auction_date range.
 - Filters are passed as query parameters to the GET /properties endpoint.
 - The backend applies filters in the database query to return matching properties.
 
@@ -120,13 +119,13 @@ SYSTEM DESCRIPTION
 - Pagination is supported via query parameters: page (default 1) and page_size (default 20).
 - Sorting can be applied on fields like auction_date, starting_price, and current_bid.
 - Sorting direction can be ascending or descending.
-- The backend returns paginated and sorted results accordingly.
+- The backend returns paginated results with metadata (total count, pages, current page).
 
 7. How new scrapers (Banco do Brasil, Santander, etc.) can be added later
 
-- Add new scraper modules inside backend/scraper/ (e.g., banco_do_brasil_scraper.py).
-- Implement scraping logic specific to the bank's auction website.
-- Add corresponding routes in backend/routes/scraper.py to trigger new scrapers.
-- Extend services to handle data from new scrapers.
-- Update models if needed to accommodate new data fields.
-- This modular approach allows easy integration of additional banks without affecting existing code.
+- Add new scraper modules under backend/scraper/ (e.g., banco_do_brasil_scraper.py).
+- Implement scraping logic specific to the bank's auction site.
+- Add corresponding routes under backend/routes/scraper.py to trigger new scrapers.
+- Extend services to handle data processing for new banks.
+- Update property model if needed to accommodate bank-specific fields.
+- Frontend remains unchanged as it consumes unified API data.
