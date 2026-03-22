@@ -1,29 +1,27 @@
 ```tsx
 import React, { useState } from 'react';
-import { PropertyFilters } from '../services/api';
+import { useFilters } from '../hooks/useFilters';
 
 interface FilterSidebarProps {
-  filters: PropertyFilters;
-  options: {
-    states: string[];
-    cities: string[];
-    neighborhoods: string[];
-    propertyTypes: string[];
-    auctionTypes: string[];
-  };
-  updateFilter: (key: keyof PropertyFilters, value: any) => void;
   onFilter: () => void;
   onScrape: () => void;
 }
 
-const FilterSidebar: React.FC<FilterSidebarProps> = ({
-  filters,
-  options,
-  updateFilter,
-  onFilter,
-  onScrape,
-}) => {
-  const [localFilters, setLocalFilters] = useState<PropertyFilters>(filters);
+const FilterSidebar: React.FC<FilterSidebarProps> = ({ onFilter, onScrape }) => {
+  const { filters, updateFilter, options } = useFilters();
 
-  const handleChange = (key: keyof PropertyFilters, value: any) => {
-    setLocalFilters((prev
+  return (
+    <aside className="w-full md:w-72 p-4 bg-white border-r border-gray-200 overflow-y-auto max-h-screen sticky top-0">
+      <h2 className="text-xl font-semibold mb-4">Filtros</h2>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Estado</label>
+          <select
+            className="w-full border rounded px-2 py-1"
+            value={filters.state || ''}
+            onChange={e => updateFilter('state', e.target.value || undefined)}
+          >
+            <option value="">Todos</option>
+            {options.states.map(s => (
+              <option key={s} value={s}>{s}</option>

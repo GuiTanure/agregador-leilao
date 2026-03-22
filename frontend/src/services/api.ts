@@ -52,8 +52,8 @@ export interface PropertyFilters {
   areaMax?: number;
   auctionDateStart?: string;
   auctionDateEnd?: string;
-  condoFeeMax?: number;
-  iptuMax?: number;
+  condoFeeCondition?: string;
+  iptuCondition?: string;
   page?: number;
   pageSize?: number;
   sortBy?: string;
@@ -71,26 +71,23 @@ const api = axios.create({
 });
 
 export const getProperties = async (filters: PropertyFilters): Promise<PropertiesResponse> => {
-  const response = await api.get('/properties', { params: filters });
-  return response.data;
+  const params: any = { ...filters };
+  return api.get('/properties', { params }).then(res => res.data);
 };
 
 export const getProperty = async (id: number): Promise<Property> => {
-  const response = await api.get(`/properties/${id}`);
-  return response.data;
+  return api.get(`/properties/${id}`).then(res => res.data);
 };
 
 export const getFilterOptions = async (): Promise<FilterOptions> => {
-  const response = await api.get('/properties/filters');
-  return response.data;
+  return api.get('/properties/filters').then(res => res.data);
 };
 
 export const scrapeProperties = async (): Promise<void> => {
-  await api.post('/scraper/scrape');
+  return api.post('/scraper/scrape').then(() => {});
 };
 
 export const getStats = async (): Promise<Stats> => {
-  const response = await api.get('/properties/stats');
-  return response.data;
+  return api.get('/properties/stats').then(res => res.data);
 };
 ```

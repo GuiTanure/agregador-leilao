@@ -10,30 +10,15 @@ export const useProperties = (filters: PropertyFilters) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchProperties = async () => {
-      setLoading(true);
-      try {
-        const response: PropertiesResponse = await getProperties({ ...filters, page, pageSize });
-        setProperties(response.properties);
-        setTotal(response.total);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProperties();
+    setLoading(true);
+    getProperties({ ...filters, page, pageSize })
+      .then((data: PropertiesResponse) => {
+        setProperties(data.properties);
+        setTotal(data.total);
+      })
+      .finally(() => setLoading(false));
   }, [filters, page, pageSize]);
 
-  const setPageNumber = (newPage: number) => {
-    setPage(newPage);
-  };
-
-  return {
-    properties,
-    total,
-    page,
-    pageSize,
-    loading,
-    setPage: setPageNumber,
-  };
+  return { properties, total, page, pageSize, setPage, setPageSize, loading };
 };
 ```

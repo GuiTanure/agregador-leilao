@@ -13,29 +13,17 @@ export const useFilters = () => {
   });
 
   useEffect(() => {
-    const fetchOptions = async () => {
-      const data = await getFilterOptions();
-      setOptions(data);
-    };
-    fetchOptions();
+    getFilterOptions().then(setOptions);
   }, []);
 
   const updateFilter = (key: keyof PropertyFilters, value: any) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+    setFilters(prev => ({ ...prev, [key]: value }));
   };
 
   const resetFilters = () => {
     setFilters({});
   };
 
-  return {
-    filters,
-    options,
-    updateFilter,
-    resetFilters,
-  };
+  return { filters, updateFilter, resetFilters, options };
 };
 ```
