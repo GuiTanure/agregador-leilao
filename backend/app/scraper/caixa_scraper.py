@@ -1,0 +1,1 @@
+# Placeholder for caixa scraper module
